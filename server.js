@@ -1,5 +1,6 @@
 const express = require("express");
 const cors = require("cors");
+require('dotenv').config();
 
 const path = require("path");
 
@@ -8,13 +9,13 @@ const app = express();
 
 // Configuración de CORS
 const corsOptions = {
-   origin: '*', // Usar variable de entorno para el origen
+   origin: '*', 
   methods: ["GET", "POST", "PUT", "DELETE"], // Limitar métodos permitidos
 
 };
 app.use(cors(corsOptions));
 
-// Middleware de seguridad
+// Middleware de seguridad jhoalsdasddsads
 
 //hola que tal
 
@@ -27,6 +28,14 @@ const db = require("./app/models");
 const Role = db.role;
 const User = db.user;
 
+(async () => {
+  try {
+    await db.sequelize.authenticate();
+    console.log('Conectado a la base de datos MySQL!');
+  } catch (error) {
+    console.error('Error al conectar a la base de datos:', error);
+  }
+})();
 // Sincronizar base de datos
 db.sequelize.sync().then(() => {
   console.log("Database synchronized.");
