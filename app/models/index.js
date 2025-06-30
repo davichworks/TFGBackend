@@ -1,4 +1,3 @@
-// Configuración de Sequelize 
 const Sequelize = require("sequelize");
 const config = require("../config/db.config.js");
 
@@ -8,6 +7,7 @@ const sequelize = new Sequelize(
   config.PASSWORD,
   {
     host: config.HOST,
+    port: config.PORT,
     dialect: config.dialect,
     pool: {
       max: config.pool.max,
@@ -23,7 +23,7 @@ const db = {};
 db.Sequelize = Sequelize;
 db.sequelize = sequelize;
 
-// Modelos
+// Aquí tus modelos (igual que en tu código)
 db.user = require("../models/user.model.js")(sequelize, Sequelize);
 db.role = require("../models/role.model.js")(sequelize, Sequelize);
 db.reservation = require("../models/reservation.model.js")(sequelize, Sequelize);
@@ -36,9 +36,7 @@ db.healthRoutine = require("../models/routinesmodels/healthroutine.model.js")(se
 db.dietPlan = require("../models/routinesmodels/dietplan.model.js")(sequelize, Sequelize);
 db.exercisePlan = require("../models/routinesmodels/exerciseplan.model.js")(sequelize, Sequelize);
 
-// Relaciones entre tablas
-
-// Roles y Usuarios (Muchos a Muchos)
+// Relaciones (igual que en tu código)
 db.role.belongsToMany(db.user, {
   through: "user_roles",
   foreignKey: "roleId",
@@ -50,11 +48,9 @@ db.user.belongsToMany(db.role, {
   otherKey: "roleId",
 });
 
-// Usuario -> Trainer (1 a 1)
 db.user.hasOne(db.trainer, { foreignKey: 'userId', as: 'trainerProfile', onDelete: 'CASCADE' });
 db.trainer.belongsTo(db.user, { foreignKey: 'userId', as: 'user', onDelete: 'CASCADE' });
 
-// Trainer -> Activity (1 a N)
 db.trainer.hasMany(db.activity, {
   foreignKey: "trainerId",
   as: "activities"
@@ -64,15 +60,12 @@ db.activity.belongsTo(db.trainer, {
   as: "trainer"
 });
 
-// Usuario -> UserInfo (1 a 1)
 db.user.hasOne(db.userInfo, { foreignKey: 'userId', onDelete: 'CASCADE' });
 db.userInfo.belongsTo(db.user, { foreignKey: 'userId', onDelete: 'CASCADE' });
 
-// Usuario -> Reservation (1 a N)
 db.user.hasMany(db.reservation, { foreignKey: 'userId', as: 'reservations', onDelete: 'CASCADE' });
 db.reservation.belongsTo(db.user, { foreignKey: 'userId', as: 'user', onDelete: 'CASCADE' });
 
-// Polimórfica Reservation -> Activity | Space
 db.reservation.belongsTo(db.activity, {
   foreignKey: 'reservableId',
   constraints: false,
@@ -95,7 +88,6 @@ db.space.hasMany(db.reservation, {
   as: 'reservations'
 });
 
-// Schedule polimórfico (relación genérica)
 db.schedule.belongsTo(db.activity, {
   foreignKey: 'schedulableId',
   constraints: false,
@@ -129,11 +121,9 @@ db.space.hasMany(db.schedule, {
   as: 'schedules'
 });
 
-// Relaciones para HealthRoutine, DietPlan y ExercisePlan (Muchos a Muchos)
-// Relaciones para HealthRoutine, DietPlan y ExercisePlan (Muchos a Muchos)
 db.healthRoutine.belongsToMany(db.dietPlan, {
   through: "HealthRoutine_DietPlans",
-  as: "dietPlans",            // alias necesario para métodos como addDietPlans
+  as: "dietPlans",
   foreignKey: "healthRoutineId",
   otherKey: "dietPlanId"
 });
@@ -146,7 +136,7 @@ db.dietPlan.belongsToMany(db.healthRoutine, {
 
 db.healthRoutine.belongsToMany(db.exercisePlan, {
   through: "HealthRoutine_ExercisePlans",
-  as: "exercisePlans",        // alias necesario para métodos como addExercisePlans
+  as: "exercisePlans",
   foreignKey: "healthRoutineId",
   otherKey: "exercisePlanId"
 });
@@ -156,7 +146,6 @@ db.exercisePlan.belongsToMany(db.healthRoutine, {
   foreignKey: "exercisePlanId",
   otherKey: "healthRoutineId"
 });
-
 
 db.ROLES = ["user", "admin", "trainer"];
 

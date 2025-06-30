@@ -1,11 +1,11 @@
-
+require('dotenv').config();
 
 module.exports = {
-  HOST: "ballast.proxy.rlwy.net",
-  USER: "root",
-  PASSWORD: "ABuryFNriGmUGuiBqYgvsnyoeXWnixDg", 
-  DB: "railway",
-  PORT: 40079,
+  HOST: process.env.MYSQLHOST || 'localhost',
+  USER: process.env.MYSQLUSER || 'root',
+  PASSWORD: process.env.MYSQLPASSWORD || '',
+  DB: process.env.MYSQLDATABASE || 'railway',
+  PORT: process.env.MYSQLPORT || 3306,
   dialect: "mysql",
   pool: {
     max: 5,
