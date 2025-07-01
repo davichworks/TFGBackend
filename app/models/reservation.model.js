@@ -18,6 +18,18 @@ module.exports = (sequelize, Sequelize) => {
     type: Sequelize.STRING,
     allowNull: false
   },
+  specificDate: {
+        type: Sequelize.DATEONLY,
+        allowNull: false
+    },
+    startTime: {
+        type: Sequelize.TIME,
+        allowNull: false
+    },
+    endTime: {
+      type:Sequelize.Time,
+      allowNull: false
+    },
       state: {
         type: Sequelize.ENUM('pendiente', 'cancelada', 'finalizada'),
         allowNull: false,
