@@ -99,16 +99,7 @@ db.activity.hasMany(db.schedule, {
   as: 'schedules'
 });
 
-db.schedule.belongsTo(db.reservation, {
-  foreignKey: 'schedulableId',
-  constraints: false,
-  as: 'reservation'
-});
-db.reservation.hasOne(db.schedule, {
-  foreignKey: 'schedulableId',
-  constraints: false,
-  as: 'schedule'
-});
+
 
 db.schedule.belongsTo(db.space, {
   foreignKey: 'schedulableId',

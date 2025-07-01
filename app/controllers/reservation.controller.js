@@ -2,7 +2,6 @@ const db = require('../models');
 const Reservation = db.reservation;
 const Space = db.space;
 const Activity = db.activity;
-const Schedule = db.schedule;
 const { Op } = require('sequelize');
 
 // Obtener todas las reservaciones
@@ -11,8 +10,7 @@ exports.getReservations = async (req, res) => {
     const reservation = await Reservation.findAll({
       include: [
         { model: Space, as: 'space' },
-        { model: Activity, as: 'activity' },
-        { model: Schedule, as: 'schedule' }
+        { model: Activity, as: 'activity' }
       ]
     });
     res.status(200).json(reservation);
@@ -45,12 +43,6 @@ exports.getReservation = async (req, res) => {
       model: db.activity,
       as: 'activity',
       required: false,
-    },
-    {
-      model: db.schedule,
-      as: 'schedule',
-      required: false,
-      where: { schedulableType: 'reservation' }
     }
   ]
 });
@@ -64,7 +56,7 @@ exports.getReservation = async (req, res) => {
 
 // Crear nueva reservación
 exports.createReservation = async (req, res) => {
-  const { reservableType, reservableId, schedule } = req.body;
+  const { reservableType, reservableId, specificDate, startTime, endTime } = req.body;
   const userId = req.userId;
 
   try {
@@ -86,22 +78,15 @@ exports.createReservation = async (req, res) => {
       userId,
       reservableId,
       reservableType,
+      specificDate,
+      startTime,
+      endTime,
       state: 'pendiente'
     });
 
-    const createdSchedule = await Schedule.create({
-      ...schedule,
-      schedulableId: reservation.id,
-      schedulableType: 'reservation'
-    });
-    if(reservation.reservableType === 'activity') { 
-
-    resource.capacity -=1;
-    await resource.save();
-    }
+    
     res.status(201).json({
       reservation,
-      schedule: createdSchedule,
       message: 'Reserva creada exitosamente con su horario'
     });
   } catch (error) {
@@ -113,7 +98,7 @@ exports.createReservation = async (req, res) => {
 // Actualizar una reservación y su horario
 exports.updateReservation = async (req, res) => {
   const { id } = req.params;
-  const { reservableType, reservableId, state, schedule } = req.body;
+  const { reservableType, reservableId, specificDate, startTime,endTime,state } = req.body;
 
   try {
     const reservation = await Reservation.findByPk(id);
@@ -131,6 +116,9 @@ exports.updateReservation = async (req, res) => {
       if (!resource) {
         return res.status(404).json({ message: `${reservableType} no encontrado.` });
       }
+      reservation.specificDate = specificDate;
+      reservation.startTime = startTime ;
+      reservation.endTime = endTime ;
       reservation.reservableType = reservableType;
       reservation.reservableId = reservableId;
     }
@@ -141,26 +129,6 @@ exports.updateReservation = async (req, res) => {
 
     await reservation.save();
 
-    if (schedule) {
-      const existingSchedule = await Schedule.findOne({
-        where: {
-          schedulableId: reservation.id,
-          schedulableType: 'reservation'
-        }
-      });
-
-      if (existingSchedule) {
-        await existingSchedule.update({
-          ...schedule
-        });
-      } else {
-        await Schedule.create({
-          ...schedule,
-          schedulableId: reservation.id,
-          schedulableType: 'reservation'
-        });
-      }
-    }
 
     res.status(200).json({
       message: 'Reserva actualizada correctamente',
@@ -197,11 +165,6 @@ exports.deleteReservation = async (req, res) => {
     reservation.state = 'cancelada';
     await reservation.save();
 
-    if(reservation.reservableType === 'activity') { 
-
-    resource.capacity +=1;
-    await resource.save();
-    }
     
 
     res.status(200).json({ message: 'Reservación cancelada exitosamente' });

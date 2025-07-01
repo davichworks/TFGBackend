@@ -27,7 +27,7 @@ module.exports = (sequelize, Sequelize) => {
         allowNull: false
       },
        schedulableType: { 
-    type: Sequelize.ENUM('reservation', 'activity', 'space'),
+    type: Sequelize.ENUM( 'activity', 'space'),
     allowNull: false
   },
       specificDate: { 
