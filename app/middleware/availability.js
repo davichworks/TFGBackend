@@ -1,26 +1,41 @@
 const db = require("../models");
-const Schedule = db.schedule;
-const Activity = db.activity;
+const { Op } = require("sequelize");
+
 const Reservation = db.reservation;
+const Activity = db.activity;
 const Space = db.space;
-const { Op } = require('sequelize');
+const Schedule = db.schedule;
 
 const availability = async (req, res, next) => {
-  const { reservableType, reservableId, schedule } = req.body;
+  const { reservableType, reservableId, specificDate, startTime, endTime } = req.body;
 
   try {
-    const validTypes = ['activity', 'space'];
-    if (!validTypes.includes(reservableType)) {
+    if (!['activity', 'space'].includes(reservableType)) {
       return res.status(400).json({ message: 'Tipo de recurso inválido.' });
     }
 
-    let resource = null;
+    if (!specificDate || !startTime || !endTime) {
+      return res.status(400).json({ message: 'Fecha y horas son requeridas.' });
+    }
 
+    const now = new Date();
+    const startDateTime = new Date(`${specificDate}T${startTime}`);
+    const endDateTime = new Date(`${specificDate}T${endTime}`);
+
+    if (startDateTime <= now || endDateTime <= now) {
+      return res.status(400).json({ message: 'La reserva debe ser en el futuro.' });
+    }
+
+    if (startDateTime >= endDateTime) {
+      return res.status(400).json({ message: 'La hora de inicio debe ser menor que la de fin.' });
+    }
+
+    let resource;
     if (reservableType === 'activity') {
       resource = await Activity.findByPk(reservableId);
-    } else if (reservableType === 'space') {
+    } else {
       resource = await Space.findByPk(reservableId, {
-        include: [{ model: Schedule, as: 'schedules' }] // Asegúrate que 'schedules' es el alias correcto en tu modelo
+        include: [{ model: Schedule, as: 'schedules' }]
       });
     }
 
@@ -28,97 +43,52 @@ const availability = async (req, res, next) => {
       return res.status(404).json({ message: `${reservableType} no encontrado.` });
     }
 
-    const {
-      startTime,
-      endTime,
-      specificDate,
-      dayOfWeek = null,
-      isSingle
-    } = schedule;
-
-    const now = new Date();
-    const scheduleStart = new Date(`${specificDate}T${startTime}`);
-    const scheduleEnd = new Date(`${specificDate}T${endTime}`);
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-
-    if (scheduleStart <= now || scheduleEnd <= now) {
-      return res.status(400).json({ message: 'La fecha y hora de la reserva deben ser futuras.' });
-    }
-
-    // Función para convertir hh:mm:ss a minutos
-    const toMinutes = (timeStr) => {
-      const [h, m] = timeStr.split(':').map(Number);
-      return h * 60 + m;
-    };
-
-    if (reservableType === 'activity') {
-      if (resource.cantidad <= 0) {
-        return res.status(400).json({ message: 'No hay disponibilidad para esta actividad.' });
-      }
-    }
-
     if (reservableType === 'space') {
+      // Convertir a minutos para comparar con horarios del espacio
+      const toMinutes = (t) => {
+        const [h, m] = t.split(':').map(Number);
+        return h * 60 + m;
+      };
+
       const startMinutes = toMinutes(startTime);
       const endMinutes = toMinutes(endTime);
-      const schedules = resource.schedules || [];
 
-      // Validar que el horario solicitado esté dentro de alguno de los horarios disponibles del espacio
-      const isWithinAnySchedule = schedules.some(sch => {
+      const isWithinAvailableSchedule = resource.schedules.some(sch => {
         const schStart = toMinutes(sch.startTime);
         const schEnd = toMinutes(sch.endTime);
         return startMinutes >= schStart && endMinutes <= schEnd;
       });
 
-      if (!isWithinAnySchedule) {
+      if (!isWithinAvailableSchedule) {
         return res.status(400).json({
-          message: 'El horario de reserva está fuera del horario disponible del espacio.'
+          message: 'El horario está fuera del rango permitido para este espacio.'
         });
       }
+    }
 
-      // Validar que la fecha no sea pasada
-      const inputDate = new Date(specificDate);
-      inputDate.setHours(0, 0, 0, 0);
-      if (inputDate < today) {
-        return res.status(400).json({ message: 'No se puede reservar en fechas pasadas.' });
-      }
-
-      // Construir condición para horarios
-      const scheduleWhere = isSingle
-        ? {
-            isSingle: true,
-            specificDate,
-            startTime,
-            endTime
+    // Buscar reservas activas para ese recurso que se solapen en fecha y horario
+    const overlappingReservations = await Reservation.findAll({
+      where: {
+        reservableId,
+        reservableType,
+        specificDate,
+        state: { [Op.ne]: 'cancelada' },
+        [Op.or]: [
+          {
+            startTime: { [Op.lt]: endTime },
+            endTime: { [Op.gt]: startTime }
           }
-        : {
-            isSingle: false,
-            dayOfWeek,
-            startTime,
-            endTime
-          };
-
-      const overlappingReservations = await Reservation.findAll({
-        where: {
-          reservableId,
-          reservableType: 'space',
-          state: { [Op.not]: 'cancelada' }
-        },
-        include: [{
-          model: Schedule,
-          as: 'schedule',
-          where: scheduleWhere
-        }]
-      });
-
-      if (overlappingReservations.length >= resource.cantidad) {
-        return res.status(400).json({ message: 'El espacio está completamente reservado para ese horario.' });
+        ]
       }
+    });
+
+    if (overlappingReservations.length >= resource.cantidad) {
+      return res.status(400).json({ message: 'No hay disponibilidad para este horario.' });
     }
 
     next();
   } catch (error) {
-    console.error('Error en verificación de disponibilidad:', reservableType, reservableId, error);
+    console.error('Error al verificar disponibilidad:', error);
     res.status(500).json({ message: 'Error al verificar disponibilidad' });
   }
 };
