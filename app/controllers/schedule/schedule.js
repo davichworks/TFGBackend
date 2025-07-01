@@ -1,9 +1,7 @@
 const cron = require('node-cron');
 const db = require('./../../models');
 const Reservation = db.reservation;
-const Schedule = db.schedule;
 const { Op, Sequelize } = db.Sequelize;
-
 
 const cancelExpiredReservations = async () => {
   try {
@@ -11,17 +9,12 @@ const cancelExpiredReservations = async () => {
 
     const expiredReservations = await Reservation.findAll({
       where: {
-        state: { [Op.notIn]: ['cancelada'] },
-      },
-      include: [{
-        model: Schedule,
-        as: 'schedule',
-        required: true,
-        where: Sequelize.where(
-          Sequelize.literal("STR_TO_DATE(CONCAT(`schedule`.`specificDate`, ' ', `schedule`.`startTime`), '%Y-%m-%d %H:%i:%s')"),
+        state: { [Op.not]: 'cancelada' },
+        [Op.and]: Sequelize.where(
+          Sequelize.literal("STR_TO_DATE(CONCAT(`specificDate`, ' ', `endTime`), '%Y-%m-%d %H:%i:%s')"),
           { [Op.lt]: now }
         )
-      }],
+      },
       attributes: ['id'],
     });
 
@@ -33,14 +26,16 @@ const cancelExpiredReservations = async () => {
     const idsToCancel = expiredReservations.map(r => r.id);
 
     const result = await Reservation.update(
-      { state: 'cancelada', updatedAt: new Date() },
       {
-        where: { id: idsToCancel }
+        state: 'cancelada',
+        updatedAt: new Date()
+      },
+      {
+        where: { id: { [Op.in]: idsToCancel } }
       }
     );
 
     console.log(`Reservas expiradas canceladas: ${result[0]}`);
-
   } catch (error) {
     console.error('Error cancelando reservas expiradas:', error);
   }
@@ -48,6 +43,6 @@ const cancelExpiredReservations = async () => {
 
 // Ejecutar cada minuto
 cron.schedule('* * * * *', () => {
-  console.log('Ejecutando tarea de cancelación de reservas expiradas...');
+  console.log('⏰ Ejecutando tarea de cancelación de reservas expiradas...');
   cancelExpiredReservations();
 });
