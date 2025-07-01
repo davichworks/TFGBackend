@@ -54,7 +54,6 @@ exports.getReservation = async (req, res) => {
   }
 };
 
-// Crear nueva reservación
 exports.createReservation = async (req, res) => {
   const { reservableType, reservableId, specificDate, startTime, endTime } = req.body;
   const userId = req.userId;
@@ -62,6 +61,7 @@ exports.createReservation = async (req, res) => {
   try {
     const validTypes = ['activity', 'space'];
     if (!validTypes.includes(reservableType)) {
+      console.log("recurso invalido");
       return res.status(400).json({ message: 'Tipo de recurso inválido.' });
     }
 
@@ -71,6 +71,8 @@ exports.createReservation = async (req, res) => {
       return res.status(404).json({ message: `${reservableType} no encontrado.` });
     }
     if (resource.cantidad <= 0) {
+            console.log("cantidad invalida");
+
       return res.status(400).json({ message: 'No hay disponibilidad para este recurso.' });
     }
 
