@@ -20,7 +20,7 @@ module.exports = function(app) {
    // app.get("/api/getUserRoutines", [authJwt.verifyToken], routineController.getUserRoutines);
  //app.get("/api/getTrainerRoutines", [authJwt.verifyToken, authJwt.isTrainer], routineController.getTrainerRoutines);
 
-    app.get('/api/getReccommendedRoutines', [authJwt.verifyToken], routineController.getRecommendedRoutines);
+    app.get('/api/getRecommendedRoutines', [authJwt.verifyToken], routineController.getRecommendedRoutines);
     
 
     app.put("/api/updateHealthRoutine/:id",[authJwt.verifyToken, authJwt.isTrainer], routineController.updateHealthRoutine);
