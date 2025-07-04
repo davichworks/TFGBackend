@@ -137,6 +137,7 @@ exports.getRecommendedRoutines = async (req, res) => {
         { model: ExercisePlan, as: "exercisePlans" }
       ]
     });
+console.log(JSON.stringify(routines, null, 2));
 
     if (!routines.length) {
       return res.status(404).json({ message: "No se encontraron rutinas recomendadas." });
