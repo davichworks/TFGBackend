@@ -117,7 +117,7 @@ exports.deleteHealthRoutine = async (req, res) => {
 // Obtener rutinas recomendadas
 exports.getRecommendedRoutines = async (req, res) => {
   const { goalType, days, age, height } = req.query;
-
+  console.log(`👉 Parámetros recibidos - goalType: ${goalType}, days: ${days}, age: ${age}, height: ${height}`);
   if (!goalType || !days || !age || !height) {
     return res.status(400).json({ message: "Faltan parámetros: goalType, days, age o height." });
   }
