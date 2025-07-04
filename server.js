@@ -37,7 +37,7 @@ const User = db.user;
   }
 })();
 // Sincronizar base de datos
-db.sequelize.sync().then(() => {
+db.sequelize.sync({alter: true}).then(() => {
   console.log("Database synchronized.");
   initial(); // Inicializar roles
 }).catch(err => {
