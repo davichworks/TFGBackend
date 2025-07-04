@@ -115,8 +115,8 @@ exports.deleteHealthRoutine = async (req, res) => {
 };
 
 exports.getRecommendedRoutines = async (req, res) => {
-  const { goalType, days, age, height , objective } = req.query;
-  if (!goalType || !days || !age || !height || objective ) {
+  const { goalType, days, age, height , activityLevel } = req.query;
+  if (!goalType || !days || !age || !height || activityLevel) {
     return res.status(400).json({ message: "Faltan parámetros: goalType, days, age o height." });
   }
 
@@ -129,7 +129,7 @@ exports.getRecommendedRoutines = async (req, res) => {
         maxAgeRecommendation: { [Op.gte]: age },
         minHeightRecommendation: { [Op.lte]: height },
         maxHeightRecommendation: { [Op.gte]: height },
-        activityLevel: objective
+        activityLevel: activityLevel
       },
       include: [
         { model: DietPlan, as: "dietPlans" },
