@@ -81,7 +81,12 @@ const availability = async (req, res, next) => {
         ]
       }
     });
-
+    console.log('Cantidad disponible:', resource.cantidad);
+    console.log('Reservas que se solapan:', overlappingReservations.length);
+    console.log('Specific Date: ', specificDate);
+    console.log('horas', startTime);
+    console.log('hora salida', endTime);
+    
     if (overlappingReservations.length >= resource.cantidad) {
       return res.status(400).json({ message: 'No hay disponibilidad para este horario.' });
     }
