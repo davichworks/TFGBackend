@@ -12,12 +12,14 @@ const cancelExpiredReservations = async () => {
         state: { [Op.not]: 'cancelada' }
       }
     });
-    console.log("comienza lo de reservas");
+    
+    const expiredReservations = allActiveReservations.filter(r => {
+      const endDateTime = new Date(`${r.specificDate}T${r.endTime}`);
+      console.log('empieza la reserva de',r.id);
+      console.log("comienza lo de reservas");
     console.log('el now es',now);
     console.log('el specificDate es',specificDate);
     console.log('el endTime es',endTime);
-    const expiredReservations = allActiveReservations.filter(r => {
-      const endDateTime = new Date(`${r.specificDate}T${r.endTime}`);
       return endDateTime < now;
     });
 
