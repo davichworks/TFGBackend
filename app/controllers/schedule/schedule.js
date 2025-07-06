@@ -6,6 +6,7 @@ const { Op, Sequelize } = db.Sequelize;
 const cancelExpiredReservations = async () => {
   try {
     const now = new Date();
+    now.setHours(now.getHours() + 2);
 
     const allActiveReservations = await Reservation.findAll({
        where: {
@@ -16,11 +17,7 @@ const cancelExpiredReservations = async () => {
     const expiredReservations = allActiveReservations.filter(r => {
       const endDateTime = new Date(`${r.specificDate}T${r.endTime}`);
       console.log('empieza la reserva de',r.id);
-      console.log("comienza lo de reservas");
-    console.log('el now es',now);
-    console.log('el specificDate es',r.specificDate);
-    console.log('el endTime es',r.endTime);
-    console.log('el endDateTime es', endDateTime);
+     
       return endDateTime < now;
     });
 
@@ -30,7 +27,7 @@ const cancelExpiredReservations = async () => {
     }
 
     const idsToCancel = expiredReservations.map(r => r.id);
-
+    console.log('ids a borrar:',idsToCancel);
     const result = await Reservation.update(
       {
         state: 'cancelada',
