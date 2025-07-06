@@ -8,14 +8,14 @@ const cancelExpiredReservations = async () => {
     const now = new Date();
 
     const expiredReservations = await Reservation.findAll({
-      where: {
-        state: { [Op.not]: 'cancelada' },
-        [Op.and]: Sequelize.where(
-          Sequelize.literal("STR_TO_DATE(CONCAT(`specificDate`, ' ', `endTime`), '%Y-%m-%d %H:%i:%s')"),
-          { [Op.lt]: now }
-        )
-      },
-      attributes: ['id'],
+       where: {
+        state: { [Op.not]: 'cancelada' }
+      }
+    });
+
+    const expiredReservations = allActiveReservations.filter(r => {
+      const endDateTime = new Date(`${r.specificDate}T${r.endTime}`);
+      return endDateTime < now;
     });
 
     if (expiredReservations.length === 0) {
