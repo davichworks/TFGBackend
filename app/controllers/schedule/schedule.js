@@ -7,7 +7,7 @@ const cancelExpiredReservations = async () => {
   try {
     const now = new Date();
 
-    const expiredReservations = await Reservation.findAll({
+    const allActiveReservations = await Reservation.findAll({
        where: {
         state: { [Op.not]: 'cancelada' }
       }
