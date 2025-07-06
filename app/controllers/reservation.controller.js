@@ -46,7 +46,7 @@ exports.getReservation = async (req, res) => {
     }
   ]
 });
-    console.log('Reservations found:', reservation);
+    console.log('Reservations found:');
     res.status(200).json(reservation);
   } catch (error) {
     console.error('Error al obtener las reservaciones:', error);
