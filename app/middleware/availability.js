@@ -19,6 +19,7 @@ const availability = async (req, res, next) => {
     }
 
     const now = new Date();
+    now.setHours(now.getHours() + 2);
     const startDateTime = new Date(`${specificDate}T${startTime}`);
     const endDateTime = new Date(`${specificDate}T${endTime}`);
 
