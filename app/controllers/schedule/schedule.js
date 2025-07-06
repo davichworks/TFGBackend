@@ -18,8 +18,8 @@ const cancelExpiredReservations = async () => {
       console.log('empieza la reserva de',r.id);
       console.log("comienza lo de reservas");
     console.log('el now es',now);
-    console.log('el specificDate es',specificDate);
-    console.log('el endTime es',endTime);
+    console.log('el specificDate es',r.specificDate);
+    console.log('el endTime es',r.endTime);
       return endDateTime < now;
     });
 
