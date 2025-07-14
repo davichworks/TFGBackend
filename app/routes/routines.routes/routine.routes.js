@@ -25,14 +25,14 @@ module.exports = function(app) {
 
     app.put("/api/updateHealthRoutine/:id",[authJwt.verifyToken, authJwt.isTrainer], routineController.updateHealthRoutine);
 
-   //s
+   
      app.delete("/api/deleteHealthRoutine/:id",[authJwt.verifyToken], routineController.deleteRoutine);
 
     app.post("/api/saveRoutine", [authJwt.verifyToken], routineController.saveRoutine);
 
     app.get("/api/getSavedRoutines", [authJwt.verifyToken], routineController.getSavedRoutines);
 
-    app.delete("/api/deleteSavedRoutine/:id", [authJwt.verifyToken], routineController.deleteSavedRoutine);
+    app.delete("/api/deleteSavedRoutine", [authJwt.verifyToken], routineController.deleteSavedRoutine);
 
     
 
