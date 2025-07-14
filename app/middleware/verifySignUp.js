@@ -2,33 +2,29 @@ const db = require("../models");
 const ROLES = db.ROLES;
 const User = db.user;
 
-checkDuplicateUsernameOrEmail = async (req, res, next) => {
+const checkDuplicateUsernameOrEmail = async (req, res, next) => {
   try {
     const { username, email, number, dni } = req.body;
-    
-    const existingUsername = await User.findOne({ where: { username } });
-    if (existingUsername) {
-      return res.status(400).send({ message: "Failed! Username is already in use." });
-    }
 
-    const existingEmail = await User.findOne({ where: { email, emailBlocked: false } });
-    if (existingEmail) {
-      return res.status(400).send({ message: "Failed! Email is already in use or blocked." });
-    }
+    const checks = [
+      { field: 'username', value: username, message: 'Usuario en uso.' },
+      { field: 'email', value: email, message: 'Email en uso', extra: { emailBlocked: false } },
+      { field: 'number', value: number, message: 'Número en uso.' },
+      { field: 'dni', value: dni, message: 'DNI en uso.' },
+    ];
 
-    const existingNumber = await User.findOne({ where: { number } });
-    if (existingNumber) {
-      return res.status(400).send({ message: "Failed! Number is already in use." });
-    }
+    for (const check of checks) {
+      const where = { [check.field]: check.value, ...(check.extra || {}) };
+      const existing = await User.findOne({ where });
 
-    const existingDni = await User.findOne({ where: { dni } });
-    if (existingDni) {
-      return res.status(400).send({ message: "Failed! DNI is already in use." });
+      if (existing) {
+        return res.status(400).send({ message: `error! ${check.message}` });
+      }
     }
 
     next();
   } catch (error) {
-    console.error("Error checking duplicates:", error);
+    console.error("Error :", error);
     return res.status(500).send({ message: "Internal server error." });
   }
 };
@@ -74,7 +70,6 @@ checkDuplicateUsernameOrEmail2 = async (req, res, next) => {
             });
           }
 
-          // Validación mejorada para 'birthday' (acepta ISO y DD/MM/YYYY)
           let parsedBirthday;
 
           if (/^\d{4}-\d{2}-\d{2}/.test(birthday)) {
@@ -131,6 +126,7 @@ checkDuplicateUsernameOrEmail2 = async (req, res, next) => {
 
           next();
         };
+        
 checkRolesExisted = (req, res, next) => {
   if (req.body.roles) {
     for (let i = 0; i < req.body.roles.length; i++) {

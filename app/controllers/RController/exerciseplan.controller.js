@@ -1,6 +1,7 @@
 const db = require("../../models");
 const ExercisePlan = db.exercisePlan;
 // Crear un nuevo plan de ejercicios
+
 exports.createExercisePlan = async (req, res) => {
   try {
     const { exercises } = req.body;

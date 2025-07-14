@@ -112,6 +112,23 @@ db.space.hasMany(db.schedule, {
   as: 'schedules'
 });
 
+
+db.user.belongsToMany(db.healthRoutine, {
+  through: 'UserRoutine',  
+  as: 'savedRoutines',      
+  foreignKey: 'userId',
+  otherKey: 'healthRoutineId',
+  onDelete: 'CASCADE',
+});
+
+db.healthRoutine.belongsToMany(db.user, {
+  through: 'UserRoutine',   
+  as: 'usersSaved',        
+  foreignKey: 'healthRoutineId',
+  otherKey: 'userId',
+  onDelete: 'CASCADE',
+});
+
 db.healthRoutine.belongsToMany(db.dietPlan, {
   through: "HealthRoutine_DietPlans",
   as: "dietPlans",

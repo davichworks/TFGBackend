@@ -47,7 +47,7 @@ console.log("COMENZANDO GETUSERGISTORY",req.body);
   try {
     const userHistory = await UserInfo.findAll({
       where: { userId },
-      order: [['createdAt', 'DESC']] // Ordenado por fecha mas reciente
+      order: [['createdAt', 'DESC']] 
     });
 
     if (!userHistory.length) {

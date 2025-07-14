@@ -7,7 +7,6 @@ const Trainer = db.trainer;
 
 checkPasswordRequirements = async (req, res, next) => {
   const { oldPassword, confirmOldPassword, newPassword } = req.body;
-  console.log("Clave antigua: " + oldPassword + " Clave antigua2: " + confirmOldPassword + " Nueva password: " + newPassword);
   
   if (oldPassword !== confirmOldPassword) {
     return res.status(400).send({
@@ -20,7 +19,6 @@ checkPasswordRequirements = async (req, res, next) => {
       message: "La nueva contraseña debe tener al menos 6 caracteres."
     });
   }
-
   try {
     const userId = req.userId;
     const user = await User.findByPk(userId);
@@ -30,14 +28,12 @@ checkPasswordRequirements = async (req, res, next) => {
         message: "Usuario no encontrado."
       });
     }
-
     const passwordIsValid = bcrypt.compareSync(oldPassword, user.password);
     if (!passwordIsValid) {
       return res.status(401).send({
         message: "Contraseña antigua incorrecta."
       });
     }
-
     next();
   } catch (error) {
     return res.status(500).send({
@@ -234,15 +230,12 @@ checkUserInfoRequirements = async (req, res, next) => {
         message: "La circunferencia de cintura debe ser un número válido mayor que cero."
       });
     }
-
-    // Validar el nivel (lvl)
     if (!lvl || !['low', 'medium', 'high'].includes(lvl)) {
       return res.status(400).send({
         message: "El nivel debe ser 'Principiante', 'Intermedio' o 'Avanzado'."
       });
     }
 
-    // Si pasa todas las validaciones, continuar con la siguiente middleware
     next();
   } catch (error) {
     console.error("Error al verificar los requisitos de la información del usuario:", error);

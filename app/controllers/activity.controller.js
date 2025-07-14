@@ -85,13 +85,11 @@ exports.getActivity = async (req, res) => {
 
 
 
-// Actualizar una actividad por su ID
 exports.updateActivity = async (req, res) => {
   const { id } = req.params;
   const { classname, location, description, capacity, monitor, schedules } = req.body;
   console.log('ID de la actividad:', id);
   try {
-    // Buscar la actividad
     const activity = await Activity.findByPk(id, {
       include: [{ model: Schedule, as: 'schedules' }]
     });
@@ -100,7 +98,6 @@ exports.updateActivity = async (req, res) => {
       return res.status(404).json({ message: 'Actividad no encontrada' });
     }
 
-    // Actualizar los datos de la actividad
     activity.classname = classname;
     activity.location = location;
     activity.description = description;
@@ -109,12 +106,9 @@ exports.updateActivity = async (req, res) => {
 
     await activity.save();
 
-    // Si se proporciona el array de horarios
     if (schedules && schedules.length > 0) {
-      // Eliminar los horarios antiguos
       await Schedule.destroy({ where: { schedulableId: id , schedulableType: 'activity' } });
 
-      // Crear los nuevos horarios
       const schedulePromises = schedules.map(schedule => {
         return Schedule.create({
           ...schedule,

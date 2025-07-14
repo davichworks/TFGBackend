@@ -45,7 +45,6 @@ const availability = async (req, res, next) => {
     }
 
     if (reservableType === 'space') {
-      // Convertir a minutos para comparar con horarios del espacio
       const toMinutes = (t) => {
         const [h, m] = t.split(':').map(Number);
         return h * 60 + m;
@@ -67,7 +66,6 @@ const availability = async (req, res, next) => {
       }
     }
 
-    // Buscar reservas activas para ese recurso que se solapen en fecha y horario
     const overlappingReservations = await Reservation.findAll({
       where: {
         reservableId,
@@ -82,12 +80,7 @@ const availability = async (req, res, next) => {
         ]
       }
     });
-    console.log('Cantidad disponible:', resource.cantidad);
-    console.log('Reservas que se solapan:', overlappingReservations.length);
-    console.log('Specific Date: ', specificDate);
-    console.log('horas', startTime);
-    console.log('hora salida', endTime);
-    
+   
     if (overlappingReservations.length >= resource.capacity) {
       return res.status(400).json({ message: 'No hay disponibilidad para este horario.' });
     }

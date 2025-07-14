@@ -128,12 +128,11 @@ exports.getPublicContent = async (req, res) => {
         return res.status(404).json({ message: 'Usuario no encontrado' });
       }
       
-      // Actualizar los campos del espacio
       user.name = name,
       user.username = username,
       user.bithday = birthday,
       user.email = email,
-      user.number = parseInt(number, 10); // Convertir a número entero
+      user.number = parseInt(number, 10); 
 
       user.dni = dni,
   
@@ -173,9 +172,8 @@ exports.getPublicContent = async (req, res) => {
           trainerProfile.active = false;
           await trainerProfile.save();
         }
-  
         return res.status(200).send({ message: "User's trainer role was removed successfully!" });
-  
+
       } else {
 
         await user.addRole(role);
@@ -188,7 +186,6 @@ exports.getPublicContent = async (req, res) => {
           trainerProfile.active = true;
           await trainerProfile.save();
         } else {
-
           await db.trainer.create({
             userId: user.id,
             name: user.name,
@@ -197,7 +194,6 @@ exports.getPublicContent = async (req, res) => {
             active: true
           });
         }
-  
         return res.status(200).send({ message: "User was promoted to trainer successfully!" });
       }
   

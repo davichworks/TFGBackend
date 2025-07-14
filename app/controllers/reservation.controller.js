@@ -142,7 +142,6 @@ exports.updateReservation = async (req, res) => {
   }
 };
 
-// Cancelar (eliminar lógicamente) una reservación
 exports.deleteReservation = async (req, res) => {
   const { id } = req.params;
   const userId = req.userId;

@@ -4,11 +4,9 @@ const HealthRoutine = db.healthRoutine;
 const DietPlan = db.dietPlan;
 const ExercisePlan = db.exercisePlan;
 
-// Crear una nueva rutina
 exports.createHealthRoutine = async (req, res) => {
   const userId = req.userId;
   const creationDate = new Date();
-
   const {
     name,
     description,
@@ -27,8 +25,6 @@ exports.createHealthRoutine = async (req, res) => {
     if (!Array.isArray(dietPlanIds) || !Array.isArray(exercisePlanIds)) {
       return res.status(400).json({ message: "dietPlanIds y exercisePlanIds deben ser arrays." });
     }
-
-    // Validar existencia de planes
     const [dietPlans, exercisePlans] = await Promise.all([
       DietPlan.findAll({ where: { id: dietPlanIds } }),
       ExercisePlan.findAll({ where: { id: exercisePlanIds } })
@@ -37,7 +33,6 @@ exports.createHealthRoutine = async (req, res) => {
     if (dietPlans.length !== dietPlanIds.length || exercisePlans.length !== exercisePlanIds.length) {
       return res.status(404).json({ message: "Alguno de los dietPlanIds o exercisePlanIds no existe." });
     }
-
     const newRoutine = await HealthRoutine.create({
       userId,
       creationDate,
@@ -51,8 +46,6 @@ exports.createHealthRoutine = async (req, res) => {
       maxHeightRecommendation,
       activityLevel
     });
-
-    // Asociar planes usando los alias definidos en las asociaciones
     await newRoutine.addDietPlans(dietPlanIds);
     await newRoutine.addExercisePlans(exercisePlanIds);
 
@@ -218,3 +211,84 @@ exports.updateHealthRoutine = async (req, res) => {
     res.status(500).json({ message: "Error interno del servidor." });
   }
 };
+
+exports.saveRoutine = async (req, res) => {
+  const userId = req.userId;
+  const { routineId } = req.body;
+
+  try {
+    const user = await db.user.findByPk(userId);
+    if (!user) {
+      return res.status(404).json({ message: "Usuario no encontrado." });
+    }
+
+    const routine = await HealthRoutine.findByPk(routineId);
+    if (!routine) {
+      return res.status(404).json({ message: "Rutina no encontrada." });
+    }
+
+    const existingRoutine = await user.getSavedRoutines({ where: { id: routineId } });
+    if (existingRoutine.length > 0) {
+      return res.status(400).json({ message: "La rutina ya está guardada por el usuario." });
+    }
+
+    await user.addHealthRoutine(routineId);
+
+    res.status(200).json({ message: "Rutina guardada exitosamente." });
+  } catch (error) {
+    console.error("Error al guardar la rutina:", error);
+    res.status(500).json({ message: "Error interno del servidor." });
+  }
+};
+
+exports.getSavedRoutines = async (req, res) => {
+  const userId = req.userId;
+
+  try {
+    const user = await db.user.findByPk(userId);
+    if (!user) {
+      return res.status(404).json({ message: "Usuario no encontrado." });
+    }
+
+    const savedRoutines = await user.getSavedRoutines({
+      include: [
+        { model: DietPlan, as: "dietPlans" },
+        { model: ExercisePlan, as: "exercisePlans" }
+      ]
+    });
+
+    if (savedRoutines.length === 0) {
+      return res.status(404).json({ message: "No hay rutinas guardadas." });
+    }
+
+    res.status(200).json({ message: "Rutinas guardadas encontradas.", routines: savedRoutines });
+  } catch (error) {
+    console.error("Error al obtener las rutinas guardadas:", error);
+    res.status(500).json({ message: "Error interno del servidor." });
+  }
+};
+
+exports.deleteSavedRoutine = async (req, res) => {
+  const userId = req.userId;
+  const { routineId } = req.params;
+
+  try {
+    const user = await db.user.findByPk(userId);
+    if (!user) {
+      return res.status(404).json({ message: "Usuario no encontrado." });
+    }
+
+    const routine = await HealthRoutine.findByPk(routineId);
+    if (!routine) {
+      return res.status(404).json({ message: "Rutina no encontrada." });
+    }
+
+    await user.removeHealthRoutine(id);
+
+    res.status(200).json({ message: "Rutina eliminada de los guardados exitosamente." });
+  } catch (error) {
+    console.error("Error al eliminar la rutina guardada:", error);
+    res.status(500).json({ message: "Error interno del servidor." });
+  }
+};
+

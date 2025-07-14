@@ -10,7 +10,7 @@ const cancelExpiredReservations = async () => {
 
     const allActiveReservations = await Reservation.findAll({
        where: {
-        state: { [Op.not]: 'cancelada' }
+        state: { [Op.not]: 'expirada' }
       }
     });
     
@@ -20,7 +20,6 @@ const cancelExpiredReservations = async () => {
      
       return endDateTime < now;
     });
-
     if (expiredReservations.length === 0) {
       console.log('No hay reservas expiradas para cancelar.');
       return;
@@ -46,6 +45,6 @@ const cancelExpiredReservations = async () => {
 
 // Ejecutar cada minuto
 cron.schedule('* * * * *', () => {
-  console.log('⏰ Ejecutando tarea de cancelación de reservas expiradas...');
+  console.log('Ejecutando cancelación de reservas expiradas...');
   cancelExpiredReservations();
 });

@@ -6,9 +6,7 @@ const Schedule = db.schedule;
 exports.createSpace = async (req, res) => {
   const { name, capacity, location, schedules } = req.body;
 
-  console.log("empieza esto" + req.body);
   try {
-   
     const spaceData = {
       name,
       capacity,
@@ -16,7 +14,6 @@ exports.createSpace = async (req, res) => {
     };
     const newSpace = await Space.create(spaceData);
 
-    
     if (schedules && schedules.length > 0) {
       const schedulePromises = schedules.map(schedule => {
         return Schedule.create({
@@ -25,7 +22,6 @@ exports.createSpace = async (req, res) => {
           schedulableType: 'space'
         });
       });
-
       await Promise.all(schedulePromises);
     }
 
@@ -35,7 +31,8 @@ exports.createSpace = async (req, res) => {
     res.status(500).json({ message: 'Error interno del servidor' });
   }
 };
-// Obtener todos los espacios con sus horarios
+
+
 exports.getSpaces = async (req, res) => {
   try {
     const spaces = await Space.findAll({
@@ -75,7 +72,6 @@ exports.getSpace = async (req, res) => {
   }
 };
 
-// Actualizar un espacio por su ID con horarios
 exports.updateSpace = async (req, res) => {
   const { id } = req.params;
   const { name, capacity, location, schedules } = req.body;
@@ -86,14 +82,12 @@ exports.updateSpace = async (req, res) => {
       return res.status(404).json({ message: 'Espacio no encontrado' });
     }
 
-    // Actualizar los campos del espacio
     space.name = name;
     space.capacity = capacity;
     space.location = location;
 
     await space.save();
 
-    // Si se pasan horarios, eliminarlos y luego asignar los nuevos
     if (schedules && schedules.length > 0) {
       await Schedule.destroy({
         where: {
@@ -101,15 +95,13 @@ exports.updateSpace = async (req, res) => {
           schedulableType: 'space'
         }
       });
-
       const schedulePromises = schedules.map(schedule => {
         return Schedule.create({
           ...schedule,
-          schedulableId: space.id,  // Asociamos el ID del espacio
-          schedulableType: 'space'  // Indicamos que este horario corresponde a un 'space'
+          schedulableId: space.id,  
+          schedulableType: 'space' 
         });
       });
-
       await Promise.all(schedulePromises);
     }
 

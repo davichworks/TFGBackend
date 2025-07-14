@@ -50,7 +50,6 @@ exports.signup = (req, res) => {
           });
         });
       } else {
-       
         Role.findOne({
           where: {
             name: "user"
@@ -82,19 +81,16 @@ exports.signin = (req, res) => {
       if (user.emailBlocked) {
         return res.status(403).send({ message: "User is blocked." });
       }
-
       var passwordIsValid = bcrypt.compareSync(
         req.body.password,
         user.password
       );
-
       if (!passwordIsValid) {
         return res.status(401).send({
           accessToken: null,
           message: "Invalid Password!"
         });
       }
-
       const token = jwt.sign({ id: user.id },
                               config.secret,
                               {
@@ -104,7 +100,6 @@ exports.signin = (req, res) => {
                               });
 
       var authorities = [];
-     
       user.getRoles().then(roles => {
         for (let i = 0; i < roles.length; i++) {
           authorities.push("ROLE_" + roles[i].name.toUpperCase());
