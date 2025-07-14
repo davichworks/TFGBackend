@@ -3,10 +3,26 @@ const DietPlan = db.dietPlan;
 
 exports.createDietPlan = async (req, res) => {
   try {
-    const newPlan = await DietPlan.create(req.body);
+    const userId = req.userId;
+    const newPlan = await DietPlan.create(userId,req.body);
     res.status(201).json({ newPlan, message: 'Plan de dieta creado exitosamente' });
   } catch (error) {
     console.error('Error al crear el plan de dieta:', error);
+    res.status(500).json({ message: 'Error interno del servidor' });
+  }
+};
+
+exports.getDietPlanByUser = async (req, res) => {
+  try {
+    const userId = req.userId;
+    const plans = await DietPlan.findAll({ where: { userId } });
+    if (!plans || plans.length === 0) {
+      return res.status(404).json({ message: 'No se encontraron planes de dieta para este usuario.' });
+    }
+    res.status(200).json(plans);
+  } catch (error) {
+    console.error('Error al obtener los planes de dieta del usuario:', error
+    );
     res.status(500).json({ message: 'Error interno del servidor' });
   }
 };

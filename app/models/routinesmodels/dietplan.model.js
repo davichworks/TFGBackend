@@ -3,6 +3,7 @@ module.exports = (sequelize, Sequelize) => {
 
 const DietPlan = sequelize.define("dietplan", {
   id: { type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true },
+  userId: { type: Sequelize.INTEGER, allowNull: false },
   kcal: { type: Sequelize.INTEGER, allowNull: false },
   protein: { type: Sequelize.INTEGER, allowNull: false },
   carbs: { type: Sequelize.INTEGER, allowNull: false },

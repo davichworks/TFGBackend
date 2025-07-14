@@ -5,13 +5,14 @@ const ExercisePlan = db.exercisePlan;
 exports.createExercisePlan = async (req, res) => {
   try {
     const { exercises } = req.body;
+    const userId = req.userId; 
     console.log("Received exercises:", exercises);
    
     if ( !exercises) {
       return res.status(400).send({ message: "Faltan campos requeridos." });
     }
     console.log("Creating new exercise plan with exercises:", exercises);
-    const newPlan = await ExercisePlan.create({
+    const newPlan = await ExercisePlan.create({userId,
       exercises: typeof exercises === "object" ? JSON.stringify(exercises) : exercises
     });
     console.log("New exercise plan created:", newPlan);

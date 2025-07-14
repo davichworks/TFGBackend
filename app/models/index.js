@@ -129,6 +129,28 @@ db.healthRoutine.belongsToMany(db.user, {
   onDelete: 'CASCADE',
 });
 
+db.user.hasMany(db.dietPlan, {
+  foreignKey: "userId",
+  as: "dietPlans",
+  onDelete: "CASCADE",
+});
+db.dietPlan.belongsTo(db.user, {
+  foreignKey: "userId",
+  as: "user",
+  onDelete: "CASCADE",
+});
+
+db.user.hasMany(db.exercisePlan, {
+  foreignKey: "userId",
+  as: "exercisePlans",
+  onDelete: "CASCADE",
+});
+db.exercisePlan.belongsTo(db.user, {
+  foreignKey: "userId",
+  as: "user",
+  onDelete: "CASCADE",
+});
+
 db.healthRoutine.belongsToMany(db.dietPlan, {
   through: "HealthRoutine_DietPlans",
   as: "dietPlans",

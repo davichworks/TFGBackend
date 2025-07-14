@@ -51,6 +51,10 @@ module.exports = (sequelize, Sequelize) => {
   type: Sequelize.ENUM('sedentario', 'moderado', 'activo'),
   allowNull: false
 },
+totaldays: {
+    type:Sequelize.INTEGER,
+    allowNull: false
+},
 
 });
   

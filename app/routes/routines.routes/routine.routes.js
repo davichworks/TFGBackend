@@ -32,7 +32,7 @@ module.exports = function(app) {
 
     app.get("/api/getSavedRoutines", [authJwt.verifyToken], routineController.getSavedRoutines);
 
-    app.delete("/api/deleteSavedRoutine", [authJwt.verifyToken], routineController.deleteSavedRoutine);
+    app.delete("/api/deleteSavedRoutine", [authJwt.verifyToken],routineController.deleteSavedRoutine);
 
     
 
