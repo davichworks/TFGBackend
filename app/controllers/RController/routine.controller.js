@@ -271,7 +271,7 @@ exports.getSavedRoutines = async (req, res) => {
 
 exports.deleteSavedRoutine = async (req, res) => {
   const userId = req.userId;
-  const { routineId } = req.params;
+  const { routineId } = req.body;
 
   try {
     const user = await db.user.findByPk(userId);

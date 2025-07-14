@@ -43,8 +43,7 @@ const cancelExpiredReservations = async () => {
   }
 };
 
-// Ejecutar cada minuto
-cron.schedule('* * * * *', () => {
+/*cron.schedule('* * * * *', () => {
   console.log('Ejecutando cancelación de reservas expiradas...');
   cancelExpiredReservations();
-});
+});*/
