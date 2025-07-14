@@ -3,7 +3,7 @@ const db = require('../../models');
 const HealthRoutine = db.healthRoutine;
 const DietPlan = db.dietPlan;
 const ExercisePlan = db.exercisePlan;
-
+const User = db.user;
 exports.createHealthRoutine = async (req, res) => {
   const userId = req.userId;
   const creationDate = new Date();
@@ -89,11 +89,11 @@ exports.getHealthRoutines = async (req, res) => {
 
 // Eliminar rutina
 exports.deleteHealthRoutine = async (req, res) => {
-  const { routineId } = req.params;
-
+  const { routineId } = req.body;
   try {
     const routine = await HealthRoutine.findByPk(routineId);
-
+ 
+    console.log("Routine ID to save:", routineId);
     if (!routine) {
       return res.status(404).json({ message: "Rutina no encontrada." });
     }
@@ -217,10 +217,12 @@ exports.saveRoutine = async (req, res) => {
   const { routineId } = req.body;
 
   try {
-    const user = await db.user.findByPk(userId);
+    const user = await User.findByPk(userId);
     if (!user) {
       return res.status(404).json({ message: "Usuario no encontrado." });
     }
+    console.log("User ID:", userId);
+    console.log("Routine ID to save:", routineId);
 
     const routine = await HealthRoutine.findByPk(routineId);
     if (!routine) {
