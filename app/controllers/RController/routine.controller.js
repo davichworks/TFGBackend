@@ -233,8 +233,7 @@ exports.saveRoutine = async (req, res) => {
     if (existingRoutine.length > 0) {
       return res.status(400).json({ message: "La rutina ya está guardada por el usuario." });
     }
-
-    await user.addHealthRoutine(routineId);
+    await user.addSavedRoutine(routineId);
 
     res.status(200).json({ message: "Rutina guardada exitosamente." });
   } catch (error) {
@@ -285,7 +284,7 @@ exports.deleteSavedRoutine = async (req, res) => {
       return res.status(404).json({ message: "Rutina no encontrada." });
     }
 
-    await user.removeHealthRoutine(id);
+    await user.deleteSavedRoutine(routineId);
 
     res.status(200).json({ message: "Rutina eliminada de los guardados exitosamente." });
   } catch (error) {
