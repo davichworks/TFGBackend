@@ -15,7 +15,6 @@ const corsOptions = {
 };
 app.use(cors(corsOptions));
 
-// Middleware de seguridad jhoalsdasddsads
 
 //hola que tal
 

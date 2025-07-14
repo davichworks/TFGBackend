@@ -274,7 +274,7 @@ exports.deleteSavedRoutine = async (req, res) => {
   const { routineId } = req.body;
 
   try {
-    const user = await db.user.findByPk(userId);
+    const user = await User.findByPk(userId);
     if (!user) {
       return res.status(404).json({ message: "Usuario no encontrado." });
     }
@@ -284,7 +284,7 @@ exports.deleteSavedRoutine = async (req, res) => {
       return res.status(404).json({ message: "Rutina no encontrada." });
     }
 
-    await user.deleteSavedRoutine(routineId);
+    await user.removeSavedRoutine(routineId);
 
     res.status(200).json({ message: "Rutina eliminada de los guardados exitosamente." });
   } catch (error) {
