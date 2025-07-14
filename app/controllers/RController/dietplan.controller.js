@@ -4,7 +4,11 @@ const DietPlan = db.dietPlan;
 exports.createDietPlan = async (req, res) => {
   try {
     const userId = req.userId;
-    const newPlan = await DietPlan.create(userId,req.body);
+    const newPlan = await DietPlan.create({
+      userId,
+      ...req.body
+    });
+
     res.status(201).json({ newPlan, message: 'Plan de dieta creado exitosamente' });
   } catch (error) {
     console.error('Error al crear el plan de dieta:', error);
