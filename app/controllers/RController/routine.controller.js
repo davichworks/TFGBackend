@@ -89,10 +89,10 @@ exports.getHealthRoutines = async (req, res) => {
 
 // Eliminar rutina
 exports.deleteHealthRoutine = async (req, res) => {
-  const { id } = req.params;
+  const { routineId } = req.params;
 
   try {
-    const routine = await HealthRoutine.findByPk(id);
+    const routine = await HealthRoutine.findByPk(routineId);
 
     if (!routine) {
       return res.status(404).json({ message: "Rutina no encontrada." });

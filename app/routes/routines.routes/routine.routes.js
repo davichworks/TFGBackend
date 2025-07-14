@@ -26,7 +26,7 @@ module.exports = function(app) {
     app.put("/api/updateHealthRoutine/:id",[authJwt.verifyToken, authJwt.isTrainer], routineController.updateHealthRoutine);
 
    
-     app.delete("/api/deleteHealthRoutine/:id",[authJwt.verifyToken], routineController.deleteRoutine);
+     app.delete("/api/deleteHealthRoutine",[authJwt.verifyToken], routineController.deleteHealthRoutine);
 
     app.post("/api/saveRoutine", [authJwt.verifyToken], routineController.saveRoutine);
 
