@@ -4,6 +4,7 @@ const db = require("../app/models");
 const { Role, User, Trainer, Space, Activity, Schedule, DietPlan, ExercisePlan, HealthRoutine } = db;
 
 const initializeData = async () => {
+    console.log("Inicializando datos...");
   // Roles
   await Role.findOrCreate({ where: { id: 1 }, defaults: { name: "user" } });
   await Role.findOrCreate({ where: { id: 2 }, defaults: { name: "admin" } });
