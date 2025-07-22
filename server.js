@@ -1,7 +1,6 @@
 const express = require("express");
 const cors = require("cors");
 require('dotenv').config();
-const { initializeData } = require('./app/inicializar');
 
 const path = require("path");
 
@@ -76,12 +75,56 @@ function getLocalIp() {
 
 
 async function initial() {
- 
-(async () => {
-  try {
-    await initializeData();
-  } catch (err) {
-    console.error("Error inicializando datos:", err);
+  await Role.findOrCreate({ where: { id: 1 }, defaults: { name: "user" } });
+  await Role.findOrCreate({ where: { id: 2 }, defaults: { name: "admin" } });
+  await Role.findOrCreate({ where: { id: 3 }, defaults: { name: "trainer" } });
+
+  const users = await User.findAll();
+  if (users.length >= 10) {
+    console.log("Ya existen suficientes usuarios.");
+    return;
   }
-})();
+
+  const bcrypt = require("bcryptjs");
+
+  const userRole = await Role.findOne({ where: { name: "user" } });
+  const adminRole = await Role.findOne({ where: { name: "admin" } });
+
+  const existingUsernames = users.map(u => u.username);
+
+  for (let i = 1; i <= 2; i++) {
+    const username = `admin${i}`;
+    if (!existingUsernames.includes(username)) {
+      const admin = await User.create({
+        name: `Admin ${i}`,
+        username: username,
+        birthday: "1990-01-01",
+        email: `admin${i}@example.com`,
+        password: bcrypt.hashSync("SuperAdmin",8),
+        number: "600000000",
+        dni: `0000000${i}A`,
+        emailBlocked: false
+      });
+      await admin.setRoles([adminRole.id]);
+      console.log(`Administrador ${username} creado.`);
+    }
+  }
+
+  for (let i = 1; i <= 8; i++) {
+    const username = `user${i}`;
+    if (!existingUsernames.includes(username)) {
+      const user = await User.create({
+        name: `User ${i}`,
+        username: username,
+        birthday: "1995-01-01",
+        email: `user${i}@example.com`,
+        password: bcrypt.hashSync("userpass", 8),
+        number: "700000000",
+        dni: `1000000${i}B`,
+        emailBlocked: false
+      });
+      await user.setRoles([userRole.id]);
+      console.log(`Usuario ${username} creado.`);
+    }
+  }
 }
