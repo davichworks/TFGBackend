@@ -1,7 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 require('dotenv').config();
-require("./app/inicializar");
+const { initializeData } = require("./app/inicializar");
 const path = require("path");
 
 
