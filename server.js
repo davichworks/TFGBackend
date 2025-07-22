@@ -73,7 +73,8 @@ function getLocalIp() {
   return ip;
 }
 
-
+// Función para inicializar roles
+// Función para inicializar roles y usuarios
 async function initial() {
   await Role.findOrCreate({ where: { id: 1 }, defaults: { name: "user" } });
   await Role.findOrCreate({ where: { id: 2 }, defaults: { name: "admin" } });
@@ -87,11 +88,13 @@ async function initial() {
 
   const bcrypt = require("bcryptjs");
 
+  // Crea usuarios si no hay suficientes
   const userRole = await Role.findOne({ where: { name: "user" } });
   const adminRole = await Role.findOne({ where: { name: "admin" } });
 
   const existingUsernames = users.map(u => u.username);
 
+  // Crear 2 administradores
   for (let i = 1; i <= 2; i++) {
     const username = `admin${i}`;
     if (!existingUsernames.includes(username)) {
@@ -110,6 +113,7 @@ async function initial() {
     }
   }
 
+  // Crear 8 usuarios normales
   for (let i = 1; i <= 8; i++) {
     const username = `user${i}`;
     if (!existingUsernames.includes(username)) {
