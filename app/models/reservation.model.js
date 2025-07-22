@@ -1,6 +1,5 @@
 module.exports = (sequelize, Sequelize) => {
     const Reservation = sequelize.define("reservation", {
-      // Definición de campos de la tabla "reservations"
       id: {
         type: Sequelize.INTEGER,
         primaryKey: true,

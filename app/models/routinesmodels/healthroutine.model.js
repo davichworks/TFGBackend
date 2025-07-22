@@ -1,7 +1,6 @@
 
 module.exports = (sequelize, Sequelize) => {
     const HealthRoutine = sequelize.define("healthroutine", {
-      // Definición de campos de la tabla "reservations"
       id: {
         type: Sequelize.INTEGER,
         primaryKey: true,

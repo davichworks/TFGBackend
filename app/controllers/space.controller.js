@@ -50,7 +50,6 @@ exports.getSpaces = async (req, res) => {
   }
 };
 
-// Obtener un espacio por su ID con horarios
 exports.getSpace = async (req, res) => {
   const { id } = req.params;
 
@@ -58,7 +57,7 @@ exports.getSpace = async (req, res) => {
     const space = await Space.findByPk(id, {
       include: {
         model: Schedule,
-        as: 'schedules'  // Incluir los horarios asociados
+        as: 'schedules'  
       }
     });
 
@@ -112,7 +111,7 @@ exports.updateSpace = async (req, res) => {
   }
 };
 
-// Eliminar un espacio por su ID
+
 exports.deleteSpace = async (req, res) => {
   const { id } = req.params;
 
@@ -122,7 +121,7 @@ exports.deleteSpace = async (req, res) => {
       return res.status(404).json({ message: 'Espacio no encontrado' });
     }
 
-    // Eliminar los horarios asociados
+   
     await Schedule.destroy({
       where: {
         schedulableId: space.id,
@@ -130,7 +129,6 @@ exports.deleteSpace = async (req, res) => {
       }
     });
 
-    // Eliminar el espacio
     await space.destroy();
 
     res.status(200).json({ message: 'Espacio eliminado exitosamente' });

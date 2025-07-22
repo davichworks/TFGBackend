@@ -4,7 +4,6 @@ const Space = db.space;
 const Activity = db.activity;
 const { Op } = require('sequelize');
 
-// Obtener todas las reservaciones
 exports.getReservations = async (req, res) => {
   try {
     const reservation = await Reservation.findAll({
@@ -20,9 +19,7 @@ exports.getReservations = async (req, res) => {
   }
 };
 
-// Obtener reservaciones del usuario en estado "pendiente"
 exports.getReservation = async (req, res) => {
-  console.log('getReservation called');
   const userId = req.userId;
   try {
     const reservation = await Reservation.findAll({
@@ -30,7 +27,7 @@ exports.getReservation = async (req, res) => {
     userId: userId,
     
     reservableType: {
-      [Op.in]: ['space', 'activity']  // o el tipo que esperes
+      [Op.in]: ['space', 'activity'] 
     }
   },
   include: [
@@ -46,10 +43,9 @@ exports.getReservation = async (req, res) => {
     }
   ]
 });
-    console.log('Reservations found:');
     res.status(200).json(reservation);
   } catch (error) {
-    console.error('Error al obtener las reservaciones:', error);
+    console.error('Error al obtener las reservas:', error);
     res.status(500).json({ message: 'Error interno del servidor' });
   }
 };
@@ -61,7 +57,6 @@ exports.createReservation = async (req, res) => {
   try {
     const validTypes = ['activity', 'space'];
     if (!validTypes.includes(reservableType)) {
-      console.log("recurso invalido");
       return res.status(400).json({ message: 'Tipo de recurso inválido.' });
     }
 
@@ -71,7 +66,6 @@ exports.createReservation = async (req, res) => {
       return res.status(404).json({ message: `${reservableType} no encontrado.` });
     }
     if (resource.cantidad <= 0) {
-            console.log("cantidad invalida");
 
       return res.status(400).json({ message: 'No hay disponibilidad para este recurso.' });
     }
@@ -97,7 +91,6 @@ exports.createReservation = async (req, res) => {
   }
 };
 
-// Actualizar una reservación y su horario
 exports.updateReservation = async (req, res) => {
   const { id } = req.params;
   const { reservableType, reservableId, specificDate, startTime,endTime,state } = req.body;

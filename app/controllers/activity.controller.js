@@ -129,12 +129,10 @@ exports.updateActivity = async (req, res) => {
 
 
 
-// Eliminar un espacio por su ID
 exports.deleteActivity = async (req, res) => {
   const { id } = req.params;
 
   try {
-    // Buscar la actividad
     const activity = await Activity.findByPk(id, {
       include: [{ model: Schedule, as: 'schedules' }]
     });
@@ -143,10 +141,8 @@ exports.deleteActivity = async (req, res) => {
       return res.status(404).json({ message: 'Actividad no encontrada' });
     }
 
-    // Eliminar todos los horarios asociados
     await Schedule.destroy({ where: { schedulableId: id , schedulableType: 'activity'} });
 
-    // Eliminar la actividad
     await activity.destroy();
 
     res.status(200).json({ message: 'Actividad y horarios eliminados exitosamente' });

@@ -22,7 +22,7 @@ module.exports = (sequelize, Sequelize) => {
         allowNull: true
       },
       daysofWeek:{
-        type: Sequelize.JSON, // Array de días de la semana
+        type: Sequelize.JSON, 
         allowNull: true
       },
       history: {

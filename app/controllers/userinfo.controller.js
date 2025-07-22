@@ -22,12 +22,11 @@ const calculateCC = (gender, peso, altura, age, pgc) => {
 
 exports.getUserInfo = async (req, res) => {
   const userId = req.userId;
-  console.log("COMENZANDO GETUSERINFO",req.body);
 
   try {
     const latestUserInfo = await UserInfo.findOne({
       where: { userId },
-      order: [['fechaActualizacion', 'DESC']] // Ordenado por fecha mas reciente 
+      order: [['fechaActualizacion', 'DESC']] 
     });
 
     if (!latestUserInfo) {
@@ -43,7 +42,6 @@ exports.getUserInfo = async (req, res) => {
 
 exports.getUserHistory = async (req, res) => {
   const userId = req.userId;
-console.log("COMENZANDO GETUSERGISTORY",req.body);
   try {
     const userHistory = await UserInfo.findAll({
       where: { userId },
@@ -61,10 +59,8 @@ console.log("COMENZANDO GETUSERGISTORY",req.body);
   }
 };
 
-// Crear nueva entrada de UserInfo (sin borrar ni actualizar previas)
 exports.createUserInfo = async (req, res) => {
   const userId = req.userId; 
-  console.log("COMENZANDO CREATEHISTORY",req.body);
   const { gender, age, peso, altura, cadera, cintura, lvl } = req.body;
 
   try {

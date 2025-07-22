@@ -10,26 +10,23 @@ const cancelExpiredReservations = async () => {
 
     const allActiveReservations = await Reservation.findAll({
        where: {
-        state: { [Op.not]: 'expirada' }
+        state: { [Op.not]: 'pendiente' }
       }
     });
     
     const expiredReservations = allActiveReservations.filter(r => {
       const endDateTime = new Date(`${r.specificDate}T${r.endTime}`);
-      console.log('empieza la reserva de',r.id);
      
       return endDateTime < now;
     });
     if (expiredReservations.length === 0) {
-      console.log('No hay reservas expiradas para cancelar.');
       return;
     }
 
     const idsToCancel = expiredReservations.map(r => r.id);
-    console.log('ids a borrar:',idsToCancel);
     const result = await Reservation.update(
       {
-        state: 'cancelada',
+        state: 'expirada',
         updatedAt: new Date()
       },
       {
@@ -43,7 +40,7 @@ const cancelExpiredReservations = async () => {
   }
 };
 
-/*cron.schedule('* * * * *', () => {
+cron.schedule('* * * * *', () => {
   console.log('Ejecutando cancelación de reservas expiradas...');
   cancelExpiredReservations();
-});*/
+});

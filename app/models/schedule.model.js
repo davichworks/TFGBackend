@@ -13,7 +13,7 @@ module.exports = (sequelize, Sequelize) => {
         type: Sequelize.TIME,
         allowNull: false,
       },
-      dayOfWeek: { // Un campo para seleccionar días de la semana
+      dayOfWeek: { 
         type: Sequelize.ENUM('Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes', 'Sabado', 'Domingo'),
         allowNull: false,
       },

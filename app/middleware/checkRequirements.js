@@ -126,7 +126,7 @@ checkReservationRequirements = async (req, res, next) => {
       }
     }
 
-    next(); // Todo OK
+    next(); 
   } catch (error) {
     console.error(error);
     return res.status(500).send({
@@ -135,7 +135,6 @@ checkReservationRequirements = async (req, res, next) => {
   }
 };
 
-// Función para verificar los requisitos del email
 checkEmailRequirements = async (req, res, next) => {
   const { email } = req.body;
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -163,7 +162,6 @@ checkEmailRequirements = async (req, res, next) => {
   }
 };
 
-// Función para verificar los requisitos del nombre de usuario
 checkUsernameRequirements = async (req, res, next) => {
   const { username } = req.body;
 

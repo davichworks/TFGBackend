@@ -37,7 +37,7 @@ exports.asignarHorario = async (req, res) => {
     const trainer = await Trainer.findByPk(trainerId);
 
     if (!trainer) {
-      return res.status(404).send({ message: "Trainer no encontrado" });
+      return res.status(404).send({ message: "Entrenador no encontrado" });
     }
 
     trainer.startTime = startTime;

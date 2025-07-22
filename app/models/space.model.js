@@ -1,4 +1,3 @@
-// models/space.model.js
 
 module.exports = (sequelize, Sequelize) => {
     const Space = sequelize.define("space", {

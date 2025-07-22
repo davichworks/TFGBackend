@@ -32,7 +32,7 @@ exports.signup = (req, res) => {
           }
         }).then(roles => {
           user.setRoles(roles).then(() => {
-            res.send({ message: "User was registered successfully as admin!" });
+            res.send({ message: "Usuario registrado como admin!" });
           });
         });
       } else if (req.body.roles) {
@@ -46,7 +46,7 @@ exports.signup = (req, res) => {
         }).then(roles => {
          
           user.setRoles(roles).then(() => {
-            res.send({ message: "User was registered successfully!" });
+            res.send({ message: "Usuario registrado!" });
           });
         });
       } else {
@@ -56,7 +56,7 @@ exports.signup = (req, res) => {
           }
         }).then(role => {
           user.setRoles([role.id]).then(() => {
-            res.send({ message: "User was registered successfully!" });
+            res.send({ message: "Usuario registrado correctamente!" });
           });
         });
       }
@@ -76,10 +76,10 @@ exports.signin = (req, res) => {
   })
     .then(user => {
       if (!user) {
-        return res.status(404).send({ message: "User Not found." });
+        return res.status(404).send({ message: "Usuario no encontrado." });
       }
       if (user.emailBlocked) {
-        return res.status(403).send({ message: "User is blocked." });
+        return res.status(403).send({ message: "Usuario está bloqueado." });
       }
       var passwordIsValid = bcrypt.compareSync(
         req.body.password,
@@ -88,7 +88,7 @@ exports.signin = (req, res) => {
       if (!passwordIsValid) {
         return res.status(401).send({
           accessToken: null,
-          message: "Invalid Password!"
+          message: "Contraseña inválida!"
         });
       }
       const token = jwt.sign({ id: user.id },

@@ -1,25 +1,20 @@
 const db = require("../../models");
 const ExercisePlan = db.exercisePlan;
-// Crear un nuevo plan de ejercicios
 
 exports.createExercisePlan = async (req, res) => {
   try {
     const { exercises } = req.body;
     const userId = req.userId; 
-    console.log("Received exercises:", exercises);
    
     if ( !exercises) {
       return res.status(400).send({ message: "Faltan campos requeridos." });
     }
-    console.log("Creating new exercise plan with exercises:", exercises);
     const newPlan = await ExercisePlan.create({userId,
       exercises: typeof exercises === "object" ? JSON.stringify(exercises) : exercises
     });
-    console.log("New exercise plan created:", newPlan);
 
     res.status(201).send(newPlan);
   } catch (err) {
-    console.error("Error creating exercise plan:", err);
 
     res.status(500).send({ message: err.message || "Error al crear el plan de ejercicios." });
   }
@@ -35,7 +30,19 @@ exports.getExercisePlans = async (req, res) => {
   }
 };
 
-// Obtener un plan de ejercicios por ID
+exports.getExercisePlanByUser = async (req, res) => {
+  try {
+    const userId = req.userId;
+    const plans = await ExercisePlan.findAll({ where: { userId } });
+    if (!plans || plans.length === 0) {
+      return res.status(404).send({ message: "No se encontraron planes de ejercicios para este usuario." });
+    }
+    res.status(200).send(plans);
+  } catch (err) {
+    res.status(500).send({ message: err.message || "Error al obtener los planes de ejercicios del usuario." });
+  }
+};
+
 exports.getExercisePlan = async (req, res) => {
   try {
     const id = req.params.id;
@@ -51,7 +58,6 @@ exports.getExercisePlan = async (req, res) => {
   }
 };
 
-// Actualizar un plan de ejercicios por ID
 exports.updateExercisePlan = async (req, res) => {
   try {
     const id = req.params.id;
@@ -76,7 +82,6 @@ exports.updateExercisePlan = async (req, res) => {
   }
 };
 
-// Eliminar un plan de ejercicios por ID
 exports.deleteExercisePlan = async (req, res) => {
   try {
     const id = req.params.id;

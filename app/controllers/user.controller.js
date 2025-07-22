@@ -34,10 +34,10 @@ exports.getTrainers = async (req, res) => {
           model: Role,
           where: {
             name: {
-              [Sequelize.Op.or]: [ "trainer"]  // Usar el operador OR para filtrar roles 'user' o 'trainer'
+              [Sequelize.Op.or]: [ "trainer"] 
             }
           },
-          attributes: ['name'] // Incluir solo el nombre del rol
+          attributes: ['name'] 
         }
       ]
     });
@@ -55,9 +55,9 @@ exports.getTrainers = async (req, res) => {
   
       if (user) {
         await user.destroy();
-        res.status(200).send({ message: "User was deleted successfully!" });
+        res.status(200).send({ message: "Usuario Borrado!" });
       } else {
-        res.status(404).send({ message: `Cannot delete User with email=${email}. Maybe User was not found or not a regular user!` });
+        res.status(404).send({ message: `No se puede eliminar =${email}.!` });
       }
     } catch (error) {
       res.status(500).send({ message: error.message });
@@ -87,9 +87,9 @@ exports.getPublicContent = async (req, res) => {
       if (user) {
         user.emailBlocked = !user.emailBlocked;
         await user.save();
-        res.status(200).send({ message: "User email block status was updated successfully!" });
+        res.status(200).send({ message: "Usuario bloqueadi!" });
       } else {
-        res.status(404).send({ message: `Cannot find User with email=${email}. Maybe User was not found or not a regular user!` });
+        res.status(404).send({ message: "No se puede bloquear al usuario" });
       }
     } catch (error) {
       res.status(500).send({ message: error.message });
@@ -153,7 +153,7 @@ exports.getPublicContent = async (req, res) => {
       const user = await User.findByPk(id);
   
       if (!user) {
-        return res.status(404).send({ message: `Cannot find User with id=${id}.` });
+        return res.status(404).send({ message: `No se puede encontrar al usuario con id =${id}.` });
       }
   
       const role = await Role.findOne({ where: { name: "trainer" } });
@@ -172,7 +172,7 @@ exports.getPublicContent = async (req, res) => {
           trainerProfile.active = false;
           await trainerProfile.save();
         }
-        return res.status(200).send({ message: "User's trainer role was removed successfully!" });
+        return res.status(200).send({ message: "Usuario borrado de entrenador" });
 
       } else {
 
@@ -194,7 +194,7 @@ exports.getPublicContent = async (req, res) => {
             active: true
           });
         }
-        return res.status(200).send({ message: "User was promoted to trainer successfully!" });
+        return res.status(200).send({ message: "Usuario promocionado correctamente!" });
       }
   
     } catch (error) {

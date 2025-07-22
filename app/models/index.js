@@ -23,7 +23,6 @@ const db = {};
 db.Sequelize = Sequelize;
 db.sequelize = sequelize;
 
-// Aquí tus modelos (igual que en tu código)
 db.user = require("../models/user.model.js")(sequelize, Sequelize);
 db.role = require("../models/role.model.js")(sequelize, Sequelize);
 db.reservation = require("../models/reservation.model.js")(sequelize, Sequelize);
@@ -36,7 +35,6 @@ db.healthRoutine = require("../models/routinesmodels/healthroutine.model.js")(se
 db.dietPlan = require("../models/routinesmodels/dietplan.model.js")(sequelize, Sequelize);
 db.exercisePlan = require("../models/routinesmodels/exerciseplan.model.js")(sequelize, Sequelize);
 
-// Relaciones (igual que en tu código)
 db.role.belongsToMany(db.user, {
   through: "user_roles",
   foreignKey: "roleId",

@@ -9,14 +9,14 @@ verifySpace = (req, res, next) => {
   
   if (!location || !/^[a-zA-ZÁÉÍÓÚÜÑáéíóúüñ\s]{1,35}$/.test(location)) {
     return res.status(400).send({
-      message: "Failed! Location must be 1-35 letters and spaces only."
+      message: "Failed! Localización incorrecta"
     });
   }
 
 
   if (!capacity || !/^[0-9_\-]{1,20}$/.test(capacity) ) {
     return res.status(400).send({
-      message: "Failed! Capacity must be a number between 1 and 30."
+      message: "Failed! Capacidad incorrecta."
     });
   }
 
@@ -26,38 +26,37 @@ verifySpace = (req, res, next) => {
 
 verifyActivity = (req, res, next) => {
 
-  console.log("Emppppp esto")
 
   const { classname, location , description, capacity, monitor } = req.body;
   
   if (!classname || !/^[a-zA-Z0-9\s]{2,20}$/.test(classname) ) {
     res.status(400).send({
-      message: "Failed! classname can only contain letters and spaces."
+      message: "Failed! nombre de clase incorrecto."
     });
     return;
   }
   if (!location || !/^[a-zA-Z0-9\s]{1,20}$/.test(location) ) {
     res.status(400).send({
-      message: "Failed! location can only contain letters and spaces."
+      message: "Failed! localización incorrecta."
     });
     return;
   }
   if (!description || !/^[a-zA-Z0-9\s]{2,20}$/.test(description) ) {
     res.status(400).send({
-      message: "Failed! Name can only contain letters and spaces."
+      message: "Failed! descripción incorrecta."
     });
     return;
   }
   if (!capacity || !/^[0-9]{1,2}$/.test(capacity)) {
     res.status(400).send({
-      message: "Failed! invalid Number."
+      message: "Failed! Número inválido."
     });
     return;
   }
 
   if (!monitor || !/^[a-zA-Z\s]{2,20}$/.test(monitor) ) {
     res.status(400).send({
-      message: "Failed! Name can only contain letters and spaces."
+      message: "Failed! Monitor inválido."
     });
     return;
   }

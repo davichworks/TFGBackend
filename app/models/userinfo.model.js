@@ -1,6 +1,6 @@
-// Define el modelo UserInfo
+
 module.exports = (sequelize, Sequelize) => {
-  const UserInfo = sequelize.define("userInfo", { // Cambié a camelCase para consistencia
+  const UserInfo = sequelize.define("userInfo", { 
     id: {
       type: Sequelize.INTEGER,
       primaryKey: true,
@@ -15,28 +15,28 @@ module.exports = (sequelize, Sequelize) => {
       type: Sequelize.INTEGER
     },
     peso: {
-      type: Sequelize.FLOAT // Peso del usuario
+      type: Sequelize.FLOAT 
     },
     altura: {
-      type: Sequelize.FLOAT // Altura del usuario
+      type: Sequelize.FLOAT 
     },
     cadera: {
-      type: Sequelize.FLOAT // Medida de cadera del usuario
+      type: Sequelize.FLOAT 
     },
     cintura: {
-      type: Sequelize.FLOAT // Medida de cintura del usuario
+      type: Sequelize.FLOAT 
     },
     imc: {
-      type: Sequelize.FLOAT // Índice de Masa Corporal
+      type: Sequelize.FLOAT 
     },
     pgc: {
-      type: Sequelize.FLOAT // Porcentaje de Grasa Corporal
+      type: Sequelize.FLOAT 
     },
     cc: {
-      type: Sequelize.FLOAT // Consumo Calórico
+      type: Sequelize.FLOAT 
     },
     lvl: {
-      type: Sequelize.ENUM('low', 'medium', 'high'), // Nivel de actividad física
+      type: Sequelize.ENUM('low', 'medium', 'high'), 
       allowNull: false,
       defaultValue: 'medium'
     },

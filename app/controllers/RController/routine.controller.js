@@ -4,6 +4,7 @@ const HealthRoutine = db.healthRoutine;
 const DietPlan = db.dietPlan;
 const ExercisePlan = db.exercisePlan;
 const User = db.user;
+
 exports.createHealthRoutine = async (req, res) => {
   const userId = req.userId;
   const creationDate = new Date();
@@ -49,7 +50,6 @@ exports.createHealthRoutine = async (req, res) => {
     await newRoutine.addDietPlans(dietPlanIds);
     await newRoutine.addExercisePlans(exercisePlanIds);
 
-    // Incluir alias en el include
     const routineWithAssociations = await HealthRoutine.findByPk(newRoutine.id, {
       include: [
         { model: DietPlan, as: "dietPlans" },
@@ -67,7 +67,6 @@ exports.createHealthRoutine = async (req, res) => {
   }
 };
 
-// Obtener todas las rutinas
 exports.getHealthRoutines = async (req, res) => {
   try {
     const routines = await HealthRoutine.findAll({
@@ -87,7 +86,6 @@ exports.getHealthRoutines = async (req, res) => {
   }
 };
 
-// Eliminar rutina
 exports.deleteHealthRoutine = async (req, res) => {
   const { routineId } = req.body;
   try {
@@ -144,7 +142,6 @@ console.log(JSON.stringify(routines, null, 2));
   }
 };
 
-// Actualizar rutina existente
 exports.updateHealthRoutine = async (req, res) => {
   const { id } = req.params;
   const userId = req.userId;
