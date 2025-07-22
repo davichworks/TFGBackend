@@ -1,7 +1,16 @@
 const bcrypt = require("bcryptjs");
 const db = require("../app/models");
 
-const { Role, User, Trainer, Space, Activity, Schedule, DietPlan, ExercisePlan, HealthRoutine } = db;
+const Role = db.role;
+const User = db.user;
+const Trainer = db.trainer;
+const DietPlan = db.dietPlan;
+const ExercisePlan = db.exercisePlan;
+const HealthRoutine = db.healthRoutine;
+const Space = db.space;
+const Activity = db.activity;
+const Schedule = db.schedule;
+
 
 const initializeData = async () => {
     console.log("Inicializando datos...");
