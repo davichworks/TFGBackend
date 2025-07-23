@@ -8,7 +8,7 @@ const Schedule = db.schedule;
 
 const availability = async (req, res, next) => {
   const { reservableType, reservableId, specificDate, startTime, endTime } = req.body;
-
+  const userId = req.userId;
   try {
     if (!['activity', 'space'].includes(reservableType)) {
       return res.status(400).json({ message: 'Tipo de recurso inválido.' });
