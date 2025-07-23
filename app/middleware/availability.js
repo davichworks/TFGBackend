@@ -85,6 +85,22 @@ const availability = async (req, res, next) => {
       return res.status(400).json({ message: 'No hay disponibilidad para este horario.' });
     }
 
+    const existingUserReservation = await Reservation.findOne({
+      where: {
+        userId, 
+        reservableId,
+        reservableType,
+        specificDate,
+        state: { [Op.ne]: 'cancelada' }
+      }
+    });
+
+    if (existingUserReservation) {
+      return res.status(400).json({
+        message: 'Ya tienes una reserva activa para este recurso en esa fecha.'
+      });
+    }
+
     next();
   } catch (error) {
     console.error('Error al verificar disponibilidad:', error);
