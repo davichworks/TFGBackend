@@ -87,11 +87,17 @@ const availability = async (req, res, next) => {
 
     const existingUserReservation = await Reservation.findOne({
       where: {
-        userId, 
+        userId,
         reservableId,
         reservableType,
         specificDate,
-        state: { [Op.ne]: 'cancelada' }
+        state: { [Op.ne]: 'cancelada' },
+        [Op.or]: [
+          {
+            startTime: { [Op.lt]: endTime },
+            endTime: { [Op.gt]: startTime }
+          }
+        ]
       }
     });
 
