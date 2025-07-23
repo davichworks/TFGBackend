@@ -11,11 +11,11 @@ module.exports = function(app) {
     next();
   });
 
-    app.post("/api/createDietPlan",[authJwt.verifyToken], dietPlanController.createDietPlan);
+    app.post("/api/createDietPlan",[authJwt.verifyToken, authJwt.isTrainer], dietPlanController.createDietPlan);
 
-    app.get("/api/getDietPlans",[authJwt.verifyToken], dietPlanController.getDietPlans);
+    app.get("/api/getDietPlans",[authJwt.verifyToken,authJwt.isTrainer], dietPlanController.getDietPlans);
 
-    app.get("/api/getDietPlan/:id", [authJwt.verifyToken], dietPlanController.getDietPlan);
+    app.get("/api/getDietPlan/:id", [authJwt.verifyToken,authJwt.isTrainer], dietPlanController.getDietPlan);
 
 
     app.put("/api/updateDietPlan/:id",[authJwt.verifyToken, authJwt.isTrainer], dietPlanController.updateDietPlan);

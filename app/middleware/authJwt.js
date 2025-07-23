@@ -6,13 +6,12 @@ const User = db.user;
 verifyToken = (req, res, next) => {
     let token = req.headers["x-access-token"];
    
-    console.log("Token received:", token);
     
 
     if(!token){
         return res.status(403).send(
             {
-                message: "No token provid"
+                message: "No token"
             });
     }
 
@@ -34,84 +33,74 @@ isAdmin = (req, res, next) => {
             
             res.status(404).send({
                 
-                message: "User not found"
+                message: "User no encontrado"
             });
             return;
         }
-        console.log("User found:", user);
 
         user.getRoles().then(roles => {
-            console.log("Roles found:", roles);
 
             for (let i = 0; i < roles.length; i++) {
-                console.log("Checking role:", roles[i].name);
 
                 if (roles[i].name === "admin") {
-                    console.log("Admin role found");
                     next();
                     return;
                 }
             }
             
-            console.log("Admin role not found");
             res.status(403).send({
-                message: "Require admin role"
+                message: "Requiere rol admin"
             });
         }).catch(err => {
-            console.error("Error getting roles:", err);
+            console.error("Error obteniendo roles:", err);
             res.status(500).send({
-                message: "Error getting roles"
+                message: "Error obteniendo roles"
             });
         });
     }).catch(err => {
-        console.error("Error finding user:", err);
+        console.error("Error , Usuario no encontrado:", err);
         res.status(500).send({
-            message: "Error finding user"
+            message: "Error, Usuario no encontrado"
         });
     });
 };
-
 isTrainer = (req, res, next) => {
     User.findByPk(req.userId).then(user => {
         if (!user) {
+            
             res.status(404).send({
-                message: "User not found"
+                
+                message: "User no encontrado"
             });
             return;
         }
-        console.log("User found:", user);
 
         user.getRoles().then(roles => {
-            console.log("Roles found:", roles);
 
             for (let i = 0; i < roles.length; i++) {
-                console.log("Checking role:", roles[i].name);
 
-                if (roles[i].name === "trainer") {
-                    console.log("Trainer role found");
+                if (roles[i].name === "admin" || roles[i].name === "trainer") {
                     next();
                     return;
                 }
             }
             
-            console.log("Trainer role not found");
             res.status(403).send({
-                message: "Require trainer role"
+                message: "Requiere rol admin"
             });
         }).catch(err => {
-            console.error("Error getting roles:", err);
+            console.error("Error obteniendo roles:", err);
             res.status(500).send({
-                message: "Error getting roles"
+                message: "Error obteniendo roles"
             });
         });
     }).catch(err => {
-        console.error("Error finding user:", err);
+        console.error("Error , Usuario no encontrado:", err);
         res.status(500).send({
-            message: "Error finding user"
+            message: "Error, Usuario no encontrado"
         });
     });
 };
-
 
 
 const authJwt = {

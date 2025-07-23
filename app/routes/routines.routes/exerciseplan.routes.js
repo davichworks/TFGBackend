@@ -11,11 +11,11 @@ module.exports = function(app) {
     next();
   });
 
-    app.post("/api/createExercisePlan",[authJwt.verifyToken], exercisePlanController.createExercisePlan);
+    app.post("/api/createExercisePlan",[authJwt.verifyToken, authJwt.isTrainer], exercisePlanController.createExercisePlan);
 
-    app.get("/api/getExercisePlans",[authJwt.verifyToken], exercisePlanController.getExercisePlans);
+    app.get("/api/getExercisePlans",[authJwt.verifyToken, authJwt.isTrainer], exercisePlanController.getExercisePlans);
 
-    app.get("/api/getExercisePlan/:id", [authJwt.verifyToken], exercisePlanController.getExercisePlan);
+    app.get("/api/getExercisePlan/:id", [authJwt.verifyToken, authJwt.isTrainer], exercisePlanController.getExercisePlan);
 
 
     app.put("/api/updateExercisePlan/:id",[authJwt.verifyToken, authJwt.isTrainer], exercisePlanController.updateExercisePlan);

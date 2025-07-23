@@ -11,7 +11,7 @@ module.exports = function(app) {
     next();
   });
 
-    app.post("/api/createHealthRoutine",[authJwt.verifyToken], routineController.createHealthRoutine);
+    app.post("/api/createHealthRoutine",[authJwt.verifyToken , authJwt.isTrainer], routineController.createHealthRoutine);
 
     app.get("/api/getHealthRoutines",[authJwt.verifyToken], routineController.getHealthRoutines);
 
@@ -26,7 +26,7 @@ module.exports = function(app) {
     app.put("/api/updateHealthRoutine/:id",[authJwt.verifyToken, authJwt.isTrainer], routineController.updateHealthRoutine);
 
    
-     app.delete("/api/deleteHealthRoutine",[authJwt.verifyToken], routineController.deleteHealthRoutine);
+     app.delete("/api/deleteHealthRoutine",[authJwt.verifyToken, authJwt.isTrainer], routineController.deleteHealthRoutine);
 
     app.post("/api/saveRoutine", [authJwt.verifyToken], routineController.saveRoutine);
 

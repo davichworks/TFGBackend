@@ -12,7 +12,7 @@ module.exports = function(app) {
     next();
   });
 
-    app.get("/api/getSpaces", spaceController.getSpaces);
+    app.get("/api/getSpaces", [authJwt.verifyToken],spaceController.getSpaces);
 
     app.get("/api/getSpace/:id", [authJwt.verifyToken],spaceController.getSpace);
 

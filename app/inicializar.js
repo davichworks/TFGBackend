@@ -11,26 +11,20 @@ const Space = db.space;
 const Activity = db.activity;
 const Schedule = db.schedule;
 
-
 const initializeData = async () => {
-    console.log("Inicializando datos...");
-  // Roles
+  console.log("Inicializando datos...");
+
+  // --- Roles ---
   await Role.findOrCreate({ where: { id: 1 }, defaults: { name: "user" } });
   await Role.findOrCreate({ where: { id: 2 }, defaults: { name: "admin" } });
   await Role.findOrCreate({ where: { id: 3 }, defaults: { name: "trainer" } });
 
-  // Usuarios existentes
+  // --- Usuarios base ---
   const users = await User.findAll();
-  if (users.length >= 10) {
-    console.log("Ya existen suficientes usuarios.");
-    return;
-  }
-
+  const existingUsernames = users.map(u => u.username);
   const userRole = await Role.findOne({ where: { name: "user" } });
   const adminRole = await Role.findOne({ where: { name: "admin" } });
   const trainerRole = await Role.findOne({ where: { name: "trainer" } });
-
-  const existingUsernames = users.map(u => u.username);
 
   // Crear administradores
   for (let i = 1; i <= 2; i++) {
@@ -70,51 +64,65 @@ const initializeData = async () => {
     }
   }
 
-  // Crear monitores (trainers) para usuarios user1, user2, user3 (existentes)
-  const usersForTrainers = await User.findAll({ where: { username: ['user1', 'user2', 'user3'] }});
-  for (const user of usersForTrainers) {
-    const existingTrainer = await Trainer.findOne({ where: { userId: user.id } });
-    if (!existingTrainer) {
-      await Trainer.create({
-        userId: user.id,
-        name: user.name,
-        username: user.username,
-        startTime: "08:00:00",
-        endTime: "18:00:00",
-        daysofWeek: ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes'],
-        history: [],
-        active: true,
-      });
-      console.log(`Monitor creado para ${user.username}`);
+  // --- Crear monitores (trainers) ---
+  const trainerUsernames = ['user1', 'user2', 'user3'];
+  for (const username of trainerUsernames) {
+    const user = await User.findOne({ where: { username } });
+    if (user) {
+      await user.addRole(trainerRole);
+      const existingTrainer = await Trainer.findOne({ where: { userId: user.id } });
+      if (!existingTrainer) {
+        await Trainer.create({
+          userId: user.id,
+          name: user.name,
+          username: user.username,
+          startTime: "08:00:00",
+          endTime: "18:00:00",
+          daysofWeek: ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes"],
+          history: [{ date: new Date().toISOString(), action: "promoted" }],
+          active: true,
+        });
+        console.log(`Monitor creado para ${user.username}`);
+      }
     }
   }
 
-  // Crear espacios
+  // --- Crear espacios ---
   const spaceData = [
     { name: "Sala de Pesas", capacity: 30, location: "Primer Piso" },
     { name: "Sala de Yoga", capacity: 20, location: "Segundo Piso" },
   ];
-
   const spaces = [];
   for (const s of spaceData) {
     const [space] = await Space.findOrCreate({ where: { name: s.name }, defaults: s });
     spaces.push(space);
   }
 
-  // Crear actividades asignando un monitor al azar
+  // --- Crear actividades ---
   const trainers = await Trainer.findAll();
   const activityData = [
-    { classname: "CrossFit", location: "Sala de Pesas", description: "Entrenamiento intenso", capacity: 15, monitor: trainers[0]?.name || "Monitor1" },
-    { classname: "Yoga Avanzado", location: "Sala de Yoga", description: "Clase de yoga para avanzados", capacity: 10, monitor: trainers[1]?.name || "Monitor2" },
+    {
+      classname: "CrossFit",
+      location: "Sala de Pesas",
+      description: "Entrenamiento funcional de alta intensidad",
+      capacity: 15,
+      monitor: trainers[0]?.name || "Monitor1",
+    },
+    {
+      classname: "Yoga Avanzado",
+      location: "Sala de Yoga",
+      description: "Clase de yoga para avanzados",
+      capacity: 10,
+      monitor: trainers[1]?.name || "Monitor2",
+    },
   ];
-
   const activities = [];
   for (const a of activityData) {
     const [activity] = await Activity.findOrCreate({ where: { classname: a.classname }, defaults: a });
     activities.push(activity);
   }
 
-  // Crear schedules para espacios y actividades para la fecha 30/07/2025
+  // --- Crear horarios ---
   const date = "2025-07-30";
   const schedulesData = [];
 
@@ -174,28 +182,25 @@ const initializeData = async () => {
     });
   }
 
-  // --- Aquí empieza la creación que pediste: 2 trainers + planes + rutinas ---
-
-  const createdTrainers = [];
+  // --- Crear trainers con dietPlans, exercisePlans y rutinas ---
   for (let i = 1; i <= 2; i++) {
-    // Crear usuario trainer si no existe
-    let user = await User.findOne({ where: { username: `trainer${i}` } });
+    const username = `trainer${i}`;
+    let user = await User.findOne({ where: { username } });
     if (!user) {
       user = await User.create({
         name: `Trainer ${i}`,
-        username: `trainer${i}`,
+        username,
         birthday: "1985-01-01",
-        email: `trainer${i}@example.com`,
+        email: `${username}@example.com`,
         password: bcrypt.hashSync("trainerpass", 8),
         number: "600000000",
         dni: `9000000${i}T`,
         emailBlocked: false,
       });
       await user.setRoles([trainerRole.id]);
-      console.log(`Usuario trainer${i} creado.`);
+      console.log(`Usuario ${username} creado.`);
     }
 
-    // Crear Trainer si no existe
     let trainer = await Trainer.findOne({ where: { userId: user.id } });
     if (!trainer) {
       trainer = await Trainer.create({
@@ -205,56 +210,46 @@ const initializeData = async () => {
         startTime: "08:00:00",
         endTime: "18:00:00",
         daysofWeek: ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes"],
-        history: [],
+        history: [{ date: new Date().toISOString(), action: "promoted" }],
         active: true,
       });
       console.log(`Trainer creado para ${user.username}`);
     }
 
-    createdTrainers.push({ user, trainer });
-  }
-
-  // Para cada trainer crear 7 dietPlans y 7 exercisePlans, y luego 2 rutinas con 4 días (4 exercisePlans y 7 dietPlans)
-  for (const { user, trainer } of createdTrainers) {
+    // Crear planes
     const dietPlans = [];
     const exercisePlans = [];
-
-    for (let i = 1; i <= 7; i++) {
-      const dietPlan = await DietPlan.create({
+    for (let j = 1; j <= 7; j++) {
+      const diet = await DietPlan.create({
         userId: user.id,
-        kcal: 2000 + i * 50,
-        protein: 150,
-        carbs: 200,
-        fats: 70,
-        breakfast: `Desayuno ${i}`,
-        lunch: `Almuerzo ${i}`,
-        dinner: `Cena ${i}`,
-        snacks: `Snack ${i}`,
+        kcal: 2000 + j * 100,
+        protein: 150 + j * 5,
+        carbs: 200 + j * 10,
+        fats: 70 + j * 2,
+        breakfast: `Desayuno ${j}: 2 huevos, 1 taza avena, 1 banana`,
+        lunch: `Almuerzo ${j}: 200g pollo, 100g arroz integral, ensalada mixta`,
+        dinner: `Cena ${j}: 150g salmón, 150g quinoa, verduras al vapor`,
+        snacks: `Snack ${j}: 30g nueces, 1 yogur griego`,
       });
-      dietPlans.push(dietPlan);
+      dietPlans.push(diet);
 
-      const exercisePlan = await ExercisePlan.create({
+      const exercises = `**Biceps y Espalda**\n- Flexión de bíceps 3x12\n- Dominadas 3x10\n- Remo con barra 4x8\n\n**Piernas y Core**\n- Sentadillas 4x12\n- Peso muerto rumano 3x10\n- Plancha abdominal 3x60s`;
+      const exercise = await ExercisePlan.create({
         userId: user.id,
-        exercises: `Ejercicios del plan ${i}`,
+        exercises: exercises,
       });
-      exercisePlans.push(exercisePlan);
+      exercisePlans.push(exercise);
     }
 
+    // Crear rutinas
     for (let r = 1; r <= 2; r++) {
-      const days = 4; // rutina de 4 días
-
-      // Seleccionar 4 exercisePlans para la rutina (los primeros 4)
-      const selectedExercisePlans = exercisePlans.slice(0, days);
-      // Para dietPlans, usamos los 7 completos
-      const selectedDietPlans = dietPlans;
-
-      const healthRoutine = await HealthRoutine.create({
+      const routine = await HealthRoutine.create({
         creationDate: new Date(),
         userId: user.id,
         name: `Rutina ${r} de ${user.username}`,
-        description: `Rutina de ${days} días creada para ${user.username}`,
+        description: `Rutina completa con planes de dieta y entrenamiento para ${user.username}`,
         type: "mantenimiento",
-        days, // 4 días
+        days: 4,
         minAgeRecommendation: 18,
         maxAgeRecommendation: 60,
         minHeightRecommendation: 150,
@@ -263,11 +258,10 @@ const initializeData = async () => {
         totaldays: 7,
       });
 
-      // Asociar planes
-      await healthRoutine.addDietPlans(selectedDietPlans);
-      await healthRoutine.addExercisePlans(selectedExercisePlans);
+      await routine.addDietPlans(dietPlans);
+      await routine.addExercisePlans(exercisePlans.slice(0, 4));
 
-      console.log(`Rutina ${r} creada para ${user.username} con ${selectedDietPlans.length} dietPlans y ${selectedExercisePlans.length} exercisePlans.`);
+      console.log(`Rutina ${r} creada para ${user.username}`);
     }
   }
 

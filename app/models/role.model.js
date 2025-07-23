@@ -1,4 +1,3 @@
-// role.js
 module.exports = (sequelize, Sequelize) => {
   const Role = sequelize.define("roles", {
     name: {
